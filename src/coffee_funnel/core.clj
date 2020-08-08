@@ -21,8 +21,8 @@
    "funnel.scad"
    (let [small-extension-height 4
          big-extension-height 10
-         lucca (- (/ 53 2) 0.5)
-         standard (- (/ 59 2) 0.5)
+         lucca (+ (/ 53 2) 0.25) ;; 0.25 experimentally measured fine adjustment value
+         standard (/ 59 2)
          funnel-height 30
          thickness 4
          lucca-side-thickness 2]
@@ -33,12 +33,12 @@
            (m/translate
             [0 0 funnel-height] (hollow-cylinder lucca small-extension-height lucca-side-thickness))
            (funnel-vary-thickness
-            {:from standard
+            {:from (+ standard thickness)
              :to lucca
              :height funnel-height
              :from-thickness thickness
              :to-thickness lucca-side-thickness})
            (m/translate
-            [0 0 (- big-extension-height)] (hollow-cylinder standard big-extension-height thickness)))))))))
+            [0 0 (- big-extension-height)] (hollow-cylinder (+ standard thickness) big-extension-height thickness)))))))))
 
 (build)
