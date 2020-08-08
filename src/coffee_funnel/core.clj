@@ -2,33 +2,42 @@
   (:require [scad-clj.scad :as scad]
             [scad-clj.model :as m]))
 
-
-(defn funnel [from to height thickness]
-  (let [rs [from to]]
+(defn funnel-vary-thickness
+  "Makes a funnel. From & to are radii measured OD."
+  [{:keys [from to height from-thickness to-thickness]}]
+  (let [rs [from to]
+        top-rs [(- from from-thickness) (- to to-thickness)]]
     (m/difference
-     (m/cylinder (mapv #(+ thickness %) rs) height)
-     (m/cylinder rs height))))
+     (m/cylinder rs height)
+     (m/cylinder top-rs height))))
 
 (defn hollow-cylinder [inner-r height thickness]
   (m/difference
-   (m/cylinder (+ thickness inner-r) height)
-   (m/cylinder inner-r height)))
+   (m/cylinder inner-r height)
+   (m/cylinder (- inner-r thickness) height)))
 
 (defn build []
   (spit
    "funnel.scad"
-   (let [small-extension-height 7
+   (let [small-extension-height 4
          big-extension-height 10
-         lucca (/ 53 2)
-         standard (/ 59 2)
-         thickness 4]
+         lucca (- (/ 53 2) 0.5)
+         standard (- (/ 59 2) 0.5)
+         funnel-height 30
+         thickness 4
+         lucca-side-thickness 2]
      (scad/write-scad
       (m/with-fn 120
         (m/with-center false
           (m/union
            (m/translate
-            [0 0 10] (hollow-cylinder (- lucca thickness) small-extension-height thickness))
-           (funnel standard (- lucca thickness) 10 thickness)
+            [0 0 funnel-height] (hollow-cylinder lucca small-extension-height lucca-side-thickness))
+           (funnel-vary-thickness
+            {:from standard
+             :to lucca
+             :height funnel-height
+             :from-thickness thickness
+             :to-thickness lucca-side-thickness})
            (m/translate
             [0 0 (- big-extension-height)] (hollow-cylinder standard big-extension-height thickness)))))))))
 
