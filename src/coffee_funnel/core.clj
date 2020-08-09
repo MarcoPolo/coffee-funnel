@@ -20,9 +20,9 @@
   (spit
    "funnel.scad"
    (let [small-extension-height 4
-         big-extension-height 10
-         lucca (+ (/ 53 2) 0.25) ;; 0.25 experimentally measured fine adjustment value
-         standard (/ 59 2)
+         big-extension-height 4
+         lucca (/ 40 2)
+         standard (/ 60 2)
          funnel-height 30
          thickness 4
          lucca-side-thickness 2]
